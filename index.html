@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Defi Yield</title>
+    </head>
+    <body >
+  <!-- <button onclick="gettronweb()">Can you get tronweb from tronlink?</button> -->
+ <script src="js/jquery-3.5.1.min.js"></script>
+    <script>
+   
+var tronLinkLoaded = false;
+var decimal = 0;
+var tronweb = null;
+var Config = null 
+var setupConfig = false;
+var setupHeader = false;
+var sessionTronADdress ; 
+var params = window.location.search.substr(1);
+var triesToLoadTronLink = 0;
+var thresholdToLoadTronLink =5;
+var obj = setInterval(async () => {
+    	
+    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+        clearInterval(obj)
+        tronLinkLoaded = true;
+        await getConfig();
+        setupHeaders();
+
+var queryDict = {}
+location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
+
+
+if(queryDict == null || queryDict.pair == null){
+	var Pair = "SEED-TRX";
+}else{
+	var tradingPair = queryDict.pair.toUpperCase();
+if(Config.pairs[tradingPair]){
+	var Pair = tradingPair;
+}else{
+	console.log("invalid pair,loading SEED-trx");
+	alert("Invalid Pair.Loading Default pair SEED-TRX");
+	var Pair = "SEED-TRX";
+}
+
+}
+
+	$("#tradingPair").html(Pair);
+	$("#tronID").html(window.tronWeb.defaultAddress.base58);
+	let UNIUPContract = await tronWeb.contract().at(Config.pairs["UP-TRX"]["contractAddress"]);
+	let UPContract = await tronWeb.contract().at(Config.pairs["UP-TRX"]["tokenAddress"]);
+	let UPVirtualPrice = await UPContract .getVirtualPrice().call();
+	var UPprice = await UNIUPContract.getPrice().call();
+	var UPtrxPrice = UPprice/Math.pow(10,Config.pairs["UP-TRX"]["decimals"]);
+	$("#pool_contractAddress").html(Config.pairs[Pair]["contractAddress"]);
+	$("#price").html(UPtrxPrice);
+	var trxPrice = await getBinanceTronPrice();
+	$("#upUSDPrice").html((trxPrice *UPtrxPrice ).toFixed(2));
+	let UniPoolContract = await tronWeb.contract().at(Config.pairs[Pair ]["contractAddress"]);
+	let pool_totalSupply = await UniPoolContract.totalSupply().call();
+	let pool_personalBalance = await UniPoolContract.balanceOf(window.tronWeb.defaultAddress.base58).call();
+	let pool_decimals = await UniPoolContract.decimals().call();
+	$("#poolTotalSupply").html(pool_totalSupply/Math.pow(10,pool_decimals));
+	$(".poolSymbol").html(Config.pairs[Pair ]["token"]);
+	$("#poolPersonalBalance").html(pool_personalBalance /Math.pow(10,pool_decimals));
+	var poolPercent = (((pool_personalBalance /Math.pow(10,pool_decimals))/(pool_totalSupply/Math.pow(10,pool_decimals)))*100).toFixed(2);
+	$("#personalPoolBalancePercent").html(poolPercent );
+	let personalFeeEarn =  await UniPoolContract.pendingFeeEarn().call();
+	
+	$("#pendingFeeEarn").html(personalFeeEarn /Math.pow(10,6));
+	var tradeSummary = await getTradeSummary(Config.pairs[Pair ]["contractAddress"]);
+	var totalBaseTradingVol = tradeSummary["summary"]["totalTradingBaseVolume"];
+	$("#tradingActivity").html(totalBaseTradingVol /Math.pow(10,6));
+	$("#tradingUSDPrice").html((totalBaseTradingVol /Math.pow(10,6)*trxPrice).toFixed(2) );
+	var fees =await UniPoolContract.getFEE().call();
+
+	var percent = await UniPoolContract.getPercentFactor().call();
+	var feesBase = (totalBaseTradingVol * (fees/percent)).toFixed(0);
+	var UPminted = Math.ceil(feesBase /UPVirtualPrice );
+	$("#totalFees").html(feesBase/Math.pow(10,6));
+	$("#feesUSDPrice").html((feesBase/Math.pow(10,6)*trxPrice).toFixed(2) );
+	$("#UPminted").html(UPminted.toFixed(0));
+	let trxBalance = await tronWeb.trx.getBalance(Config.pairs[Pair ]["contractAddress"]);
+	let totalLiquidity = (trxBalance *2/Math.pow(10,6));
+	let totalUPMarketValue = (UPminted/2)*UPtrxPrice ;
+	let dailyROI = (totalUPMarketValue /totalLiquidity  * 100).toFixed(6);
+	let hourlyAPR = (dailyROI /24).toFixed(6);
+	let weeklyAPR = (dailyROI *7).toFixed(6);
+	let monthlyAPR = (dailyROI *30).toFixed(6);
+	let yearlyAPR = (dailyROI *365).toFixed(6);
+	$("#hourlyAPR").html(hourlyAPR );
+	$("#dailyAPR").html(dailyROI );
+	$("#weeklyAPR").html(weeklyAPR );
+	$("#monthlyAPR ").html(monthlyAPR );
+	$("#yearlyAPR").html(yearlyAPR );
+	var totalClaimed =await UniPoolContract.totalProfitOf(window.tronWeb.defaultAddress.base58).call();
+
+	$("#totalUpClaimed").html(totalClaimed?totalClaimed/Math.pow(10,6):0 );
+
+	
+    }
+}, 1000)
+
+
+async function getBinanceTronPrice(){
+var url= "https://api.binance.com/api/v1/ticker/price?symbol=TRXUSDT";
+var results = await $.get( url);
+return results.price?results.price:0;
+
+}
+function promptTronAddress() {
+  var txt;
+  var walletAddress = prompt("Please enter your Address:", "");
+  if (walletAddress == null || walletAddress == "") {
+    return false
+  } else {
+   return walletAddress
+  }
+
+}
+
+function findGetParameter(parameterName) {
+    var result = null,
+        tmp = [];
+    location.search
+        .substr(1)
+        .split("&")
+        .forEach(function (item) {
+          tmp = item.split("=");
+          if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+        });
+    return result;
+}
+async function getTradeSummary(address){
+var url = "https://api.sesameseed.org/votes/unifi/history/mainnet/" + address
+var results = await getHistoryTrade(address);
+return results;
+
+
+
+}
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function getConfig(){
+	   if(setupConfig){
+		return//already setup
+	    }
+	    
+                var configObj = await $.getJSON("config.json")
+	    Config = configObj;
+	    setupConfig;    
+		
+}
+
+
+
+async function getHistoryTrade(address){
+    var currentTime = new Date();
+
+	
+   var msgObj={};
+   msgObj["summary"] = {
+	
+        "totalTradingBaseVolume": 0,
+        "totalTradingTokenVolume": 0,
+        "totalTradingTokenVolumeActual":0,
+        "fromTime": currentTime
+    }
+
+  
+        var condition = {
+            eventName: "TokenPurchase",
+            only_confirmed: true,
+ 	size: 1000
+        }
+        var msgObj = {};
+        var tokenPurchase = await tronWeb .getEventResult(address, condition);
+        condition["eventName"] = "TokenSold";
+        var totalPurchase = 0;
+        var baseCurrencyUsed = 0;
+        for (var i = 0; i < tokenPurchase.length; i++) {
+            totalPurchase += parseInt(tokenPurchase[i]["result"]["sold"]);
+            baseCurrencyUsed += parseInt(tokenPurchase[i]["result"]["bought"]);
+
+        }
+        msgObj["tokenPurchase"] = {
+            totalPurchase: totalPurchase,
+            baseCurrencyUsed: baseCurrencyUsed,
+            totalTransactions: tokenPurchase.length,
+           // data: tokenPurchase
+        }
+	
+
+    var tokenSold = await tronWeb.getEventResult(address, condition);
+
+    var totalSoldAmount = 0;
+    var baseCurrencyUsed = 0;
+    for (var i = 0; i < tokenSold.length; i++) {
+        totalSoldAmount += parseInt(tokenSold [i]["result"]["sold"]);
+        baseCurrencyUsed += parseInt(tokenSold [i]["result"]["bought"]);
+
+    }
+
+    var lastTokenPurchaseTimeDifference = tokenPurchase[tokenPurchase.length-1]["timestamp"];
+    var tokenPurchaseTimeDiff =  currentTime.getTime()-lastTokenPurchaseTimeDifference; 
+    var lastTokenSoldTimeDifference = tokenSold[tokenSold.length-1]["timestamp"];
+    var tokenSoldTimeDiff =  currentTime.getTime()-lastTokenSoldTimeDifference ;
+    var averageDistance = (tokenPurchaseTimeDiff  + tokenSoldTimeDiff )/2;
+    var entireDayMS = 1000*60*60*24;
+
+    msgObj["tokenSold"] = {
+        totalSold: totalSoldAmount,
+        baseCurrencyUsed: baseCurrencyUsed,
+        totalTransactions: tokenSold.length,
+       // data: tokenSold
+    }
+
+	var ratio = 1;
+	if(tokenSold.length >= 200 || tokenPurchase.length >=200){
+		 ratio = (entireDayMS /averageDistance).toFixed(6) ;
+		console.log("RATIO" + ratio);	
+
+	}
+    msgObj["summary"] = {
+	
+        "totalTradingBaseVolume": parseInt(msgObj["tokenSold"]["baseCurrencyUsed"]*ratio ) + parseInt(msgObj["tokenPurchase"]["baseCurrencyUsed"]*ratio),
+        "totalTradingTokenVolume": parseInt(msgObj["tokenSold"]["totalSold"]*ratio ) + parseInt(msgObj["tokenPurchase"]["totalPurchase"]*ratio ),
+  	
+
+        "fromTime": currentTime
+    }
+
+    return msgObj
+
+}
+
+function setupHeaders(){
+if(setupHeader){
+	return
+}
+setupHeader=true;
+
+var footer = document.getElementsByClassName("TRX_PAIRS")[0];
+for (var pair in Config.pairs){
+    if (Config.pairs.hasOwnProperty(pair )) {
+                var a = document.createElement('a');  
+                  
+
+                var link = document.createTextNode(pair ); 
+                  
+                a.appendChild(link);  
+                  
+                // Set the title. 
+                a.title = pair; 
+	    a.style = "margin-right: 5px;" 
+                  var base_url = window.location.origin;
+   
+                a.href = base_url + "?pair="+pair;  
+                document.getElementById("TRX_PAIRS").appendChild(a);      }
+}
+
+}
+</script>
+	   
+        <pre>
+
+   
+***** &#129489; UNIFI FARMING CALCULATOR[<span id="tradingPair"></span>] &#129489; *****
+POOL <span class="poolSymbol"></span> : https://tron.unifiprotocol.com/liquidity/pool/join/<span id="pool_contractAddress">{CONFIG.pairs["SEED-TRX"]["contractAddress"]}</span>
+
+*****************************
+
+<div id="currentTime">Sat Sep 12 2020 16:04:43 GMT+0800</div>
+
+Initialized <span id="tronID"></span> 
+Reading smart contracts...
+Finished reading smart contracts... Looking up prices... 
+
+========== PRICES ==========
+1 UP = <span id="price"></span> TRX [$<span id="upUSDPrice"></span>]
+
+
+========== STAKING =========
+There are total   : <span id="poolTotalSupply"> </span> <span class="poolSymbol"></span>
+
+You are staking   : <span id="poolPersonalBalance"> </span> <span class="poolSymbol"></span> [<span id="personalPoolBalancePercent"></span>%]
+
+======== UP REWARDS ========
+Claimable Rewards :  <span id="pendingFeeEarn"> </span> UP
+Hourly ROI in USD : <span id="hourlyAPR"></span>%
+Daily ROI in USD  : <span id="dailyAPR"></span>%
+Weekly ROI in USD : <span id="weeklyAPR"></span>%
+APY (unstable)    : <span id="yearlyAPR"></span>%
+
+[Last 24H]Pool Total Trading Activity     :<span id="tradingActivity"></span> TRX [$<span id="tradingUSDPrice"></span>]
+[Last 24H]Pool Total Fees                 :<span id="totalFees"></span>TRX [$<span id="feesUSDPrice"></span>]
+[Last 24H]Pool Total UP minted            :<span id="UPminted"></span>
+
+Your total UP claimed: <span id="totalUpClaimed"></span> UP
+*****************************
+<div id="TRX_PAIRS"><p>Tron:</p></div>  
+Tip please(: :
+TRX: TA4AxvvaFL52MsSdY3Cs1hQwtUQpErxYcR
+ETH: 0xF4EAd4935a44102a8FdE7Fa08053F350AA4904C1
+
+
+      </pre>
+   
+    </body>
+</html>

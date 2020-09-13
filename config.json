@@ -1,0 +1,133 @@
+{
+  "blockchain": "tron",
+  "blockchainToken": "TRX",
+  "accountExplorer": "https://tronscan.org/#/address/{{ADDRESS}}",
+  "pairs": {
+      "SEED-TRX":{
+      "name": "SEED",
+      "contractAddress": "TMFvnLMR1r1awHVGZsciwP4e3PVD7eiMWe",
+      "token": "uSEED",
+      "tokenAddress": "TBwoSTyywvLrgjSgaatxrBhxt3DGpVuENh",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 6
+    },
+    "USDT-TRX":{
+      "name": "USDT",
+      "contractAddress": "TYmbq6sGxEe2VkhpSpvfiw5f8ir5HxpAun",
+      "token": "uUSDT",
+      "tokenAddress": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 6
+    },
+     "UP-TRX":{
+      "name": "UP",
+      "contractAddress": "TUxqQp2qXUx7hT2F6Zx4hy85n8o9L9bzM9",
+      "token": "uUP",
+      "tokenAddress": "TJ93jQZibdB3sriHYb5nNwjgkPPAcFR7ty",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 6
+    },
+    "KLV-TRX":{
+      "name": "KLV",
+      "contractAddress": "TDPWh9r6pMKN3DJDPJAZH7GMpewmgofyfW",
+      "token": "uKLV",
+      "tokenAddress": "TVj7RNVHy6thbM7BWdSe9G6gXwKhjhdNZS",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 6
+    },
+     "WIN-TRX":{
+      "name": "WIN",
+      "contractAddress": "TDYEusxwaRkxs6JdGdWFLpEcXtjuVjeykU",
+      "token": "uWIN",
+      "tokenAddress": "TLa2f6VPqDgRE67v1736s7bJ8Ray5wYjU7",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 6
+    },
+    "BNKR-TRX":{
+      "name": "BNKR",
+      "contractAddress": "TW1cnZrL1qtrH6mXXK2CM75Ax77C8ffmtk",
+      "token": "uBNKR",
+      "tokenAddress": "TNo59Khpq46FGf4sD7XSWYFNfYfbc8CqNK",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 6
+    },
+    "JSI-TRX":{
+      "name": "JFI",
+      "contractAddress": "TEAVNdAKKEzXUSvECuQHCyXUZJ1aGRKa3s",
+      "token": "uJFI",
+      "tokenAddress": "TN7zQd2oCCguSQykZ437tZzLEaGJ7EGyha",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 18
+    },
+    "SUN-TRX":{
+      "name": "SUN",
+      "contractAddress": "TCFkPBue2PJC4DYm3pcf2n8zS4BoS7HX5t",
+      "token": "uSUN",
+      "tokenAddress": "TKkeiboTkxXKJpbmVFbv4a8ov5rAfRDMf9",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 18
+    },
+    "JST-TRX":{
+      "name": "JST",
+      "contractAddress": "TStFJsoAcXXpn9rW7Q9VUhRE1D2pQV5oEN",
+      "token": "uJST",
+      "tokenAddress": "TCFLL5dx5ZJdKnWuesXxi1VPwjLVmWZZy9",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 18
+    }
+  },
+  "contracts": {
+    "TRX": {
+      "address": "TRX",
+      "decimals": 6
+    },
+    "UP": {
+      "address": "TJ93jQZibdB3sriHYb5nNwjgkPPAcFR7ty",
+      "decimals": 6
+    },
+    "SEED": {
+      "address": "TBwoSTyywvLrgjSgaatxrBhxt3DGpVuENh",
+      "decimals": 6
+    },
+    "USDT": {
+      "address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+      "decimals": 6
+    },
+    "KLV": {
+      "address": "TVj7RNVHy6thbM7BWdSe9G6gXwKhjhdNZS",
+      "decimals": 6
+    },
+    "WIN": {
+      "address": "TLa2f6VPqDgRE67v1736s7bJ8Ray5wYjU7",
+      "decimals": 6
+    },
+    "BNKR": {
+      "address": "TNo59Khpq46FGf4sD7XSWYFNfYfbc8CqNK",
+      "decimals": 6
+    },
+    "JFI": {
+      "address": "TN7zQd2oCCguSQykZ437tZzLEaGJ7EGyha",
+      "decimals": 18
+    },
+    "JST": {
+      "address": "TCFLL5dx5ZJdKnWuesXxi1VPwjLVmWZZy9",
+      "decimals": 18
+    },
+    "SUN": {
+      "address": "TKkeiboTkxXKJpbmVFbv4a8ov5rAfRDMf9",
+      "decimals": 18
+    }
+  },
+  "globalPrecision": 1000000,
+  "globalPowerPrecision": 6,
+  "percentagePrecision": 100000
+}
