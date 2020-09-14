@@ -8,6 +8,7 @@
     </head>
     <body >
   <!-- <button onclick="gettronweb()">Can you get tronweb from tronlink?</button> -->
+
  <script src="js/jquery-3.5.1.min.js"></script>
     <script>
    
@@ -22,8 +23,8 @@ var params = window.location.search.substr(1);
 var triesToLoadTronLink = 0;
 var thresholdToLoadTronLink =5;
 var obj = setInterval(async () => {
-    	
-    if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
+    	console.log(triesToLoadTronLink++);
+      if (window.tronWeb && window.tronWeb.defaultAddress.base58) {
         clearInterval(obj)
         tronLinkLoaded = true;
         await getConfig();
@@ -46,7 +47,8 @@ if(Config.pairs[tradingPair]){
 }
 
 }
-
+ 
+	$("#isTronLink").html("");
 	$("#tradingPair").html(Pair);
 	$("#tronID").html(window.tronWeb.defaultAddress.base58);
 	let UNIUPContract = await tronWeb.contract().at(Config.pairs["UP-TRX"]["contractAddress"]);
@@ -57,12 +59,15 @@ if(Config.pairs[tradingPair]){
 	$("#pool_contractAddress").html(Config.pairs[Pair]["contractAddress"]);
 	$("#price").html(UPtrxPrice);
 	var trxPrice = await getBinanceTronPrice();
+	let trxBalance = await tronWeb.trx.getBalance(Config.pairs[Pair ]["contractAddress"]);
 	$("#upUSDPrice").html((trxPrice *UPtrxPrice ).toFixed(2));
 	let UniPoolContract = await tronWeb.contract().at(Config.pairs[Pair ]["contractAddress"]);
 	let pool_totalSupply = await UniPoolContract.totalSupply().call();
 	let pool_personalBalance = await UniPoolContract.balanceOf(window.tronWeb.defaultAddress.base58).call();
 	let pool_decimals = await UniPoolContract.decimals().call();
 	$("#poolTotalSupply").html(pool_totalSupply/Math.pow(10,pool_decimals));
+	$("#poolTotalSupplyUSD").html((trxBalance/Math.pow(10,6)*2*trxPrice).toFixed(2) );
+	console.log((trxBalance/Math.pow(10,6)*2*trxPrice).toFixed(2));
 	$(".poolSymbol").html(Config.pairs[Pair ]["token"]);
 	$("#poolPersonalBalance").html(pool_personalBalance /Math.pow(10,pool_decimals));
 	var poolPercent = (((pool_personalBalance /Math.pow(10,pool_decimals))/(pool_totalSupply/Math.pow(10,pool_decimals)))*100).toFixed(2);
@@ -82,7 +87,7 @@ if(Config.pairs[tradingPair]){
 	$("#totalFees").html(feesBase/Math.pow(10,6));
 	$("#feesUSDPrice").html((feesBase/Math.pow(10,6)*trxPrice).toFixed(2) );
 	$("#UPminted").html(UPminted.toFixed(0));
-	let trxBalance = await tronWeb.trx.getBalance(Config.pairs[Pair ]["contractAddress"]);
+	
 	let totalLiquidity = (trxBalance *2/Math.pow(10,6));
 	let totalUPMarketValue = (UPminted/2)*UPtrxPrice ;
 	let dailyROI = (totalUPMarketValue /totalLiquidity  * 100).toFixed(6);
@@ -219,15 +224,25 @@ async function getHistoryTrade(address){
     }
 
 	var ratio = 1;
-	if(tokenSold.length >= 200 || tokenPurchase.length >=200){
-		 ratio = (entireDayMS /averageDistance).toFixed(6) ;
-		console.log("RATIO" + ratio);	
+	if(tokenSold.length >= 200 ){
+		 ratio = (entireDayMS /tokenSoldTimeDiff ).toFixed(6) ;
+		console.log("tokenSold RATIO" + ratio);
+		msgObj["tokenSold"]["baseCurrencyUsed"] = parseInt(msgObj["tokenSold"]["baseCurrencyUsed"]*ratio);
+		msgObj["tokenPurchase"]["baseCurrencyUsed"] = parseInt(msgObj["tokenPurchase"]["baseCurrencyUsed"]*ratio)	
+	}
+
+	if( tokenPurchase.length >=200){
+
+		 ratio = (entireDayMS /tokenPurchaseTimeDiff  ).toFixed(6) ;
+		console.log(" tokenPurchase RATIO" + ratio);
+		msgObj["tokenPurchase"]["baseCurrencyUsed"] = parseInt(msgObj["tokenPurchase"]["baseCurrencyUsed"]*ratio)	
+		msgObj["tokenPurchase"]["totalPurchase"] = parseInt(msgObj["tokenPurchase"]["totalPurchase"]*ratio)	
 
 	}
     msgObj["summary"] = {
 	
-        "totalTradingBaseVolume": parseInt(msgObj["tokenSold"]["baseCurrencyUsed"]*ratio ) + parseInt(msgObj["tokenPurchase"]["baseCurrencyUsed"]*ratio),
-        "totalTradingTokenVolume": parseInt(msgObj["tokenSold"]["totalSold"]*ratio ) + parseInt(msgObj["tokenPurchase"]["totalPurchase"]*ratio ),
+        "totalTradingBaseVolume": parseInt(msgObj["tokenSold"]["baseCurrencyUsed"]) + parseInt(msgObj["tokenPurchase"]["baseCurrencyUsed"]),
+        "totalTradingTokenVolume": parseInt(msgObj["tokenSold"]["totalSold"] ) + parseInt(msgObj["tokenPurchase"]["totalPurchase"] ),
   	
 
         "fromTime": currentTime
@@ -267,7 +282,7 @@ for (var pair in Config.pairs){
 	   
         <pre>
 
-   
+   <span id="isTronLink"> This site requires tronlink to be connected! </span>
 ***** &#129489; UNIFI FARMING CALCULATOR[<span id="tradingPair"></span>] &#129489; *****
 POOL <span class="poolSymbol"></span> : https://tron.unifiprotocol.com/liquidity/pool/join/<span id="pool_contractAddress">{CONFIG.pairs["SEED-TRX"]["contractAddress"]}</span>
 
@@ -284,29 +299,40 @@ Finished reading smart contracts... Looking up prices...
 
 
 ========== STAKING =========
-There are total   : <span id="poolTotalSupply"> </span> <span class="poolSymbol"></span>
+There are total   : <span id="poolTotalSupply"> </span> <span class="poolSymbol"></span> [$<span id="poolTotalSupplyUSD"></span>]
 
 You are staking   : <span id="poolPersonalBalance"> </span> <span class="poolSymbol"></span> [<span id="personalPoolBalancePercent"></span>%]
 
 ======== UP REWARDS ========
-Claimable Rewards :  <span id="pendingFeeEarn"> </span> UP
+Claimable Rewards : <span id="pendingFeeEarn"> </span> UP
 Hourly ROI in USD : <span id="hourlyAPR"></span>%
 Daily ROI in USD  : <span id="dailyAPR"></span>%
 Weekly ROI in USD : <span id="weeklyAPR"></span>%
 APY (unstable)    : <span id="yearlyAPR"></span>%
 
-[Last 24H]Pool Total Trading Activity     :<span id="tradingActivity"></span> TRX [$<span id="tradingUSDPrice"></span>]
-[Last 24H]Pool Total Fees                 :<span id="totalFees"></span>TRX [$<span id="feesUSDPrice"></span>]
-[Last 24H]Pool Total UP minted            :<span id="UPminted"></span>
+[Last 24H]Pool Total Trading Activity**               :<span id="tradingActivity"></span> TRX [$<span id="tradingUSDPrice"></span>]
+[Last 24H]Pool Total Fees**                           :<span id="totalFees"></span> TRX [$<span id="feesUSDPrice"></span>]
+[Last 24H]Pool Estimated Total UP minted**            :<span id="UPminted"></span> UP
+
+**These values are purely estimated based on the last 200 transactions. 
+Formula: 24 hours/Timestamp of 200th Transactions * total transaction value.
+if the last 200 transactions is within an hour, the total estimated 24H tradingActivity would be <b>multipled</b> by 24!
+if the last 200 transaction is within 2 days  , the total estimated 24H tradingActivity would be <b>divided</b> by 2!
 
 Your total UP claimed: <span id="totalUpClaimed"></span> UP
 *****************************
 <div id="TRX_PAIRS"><p>Tron:</p></div>  
+
+
+
 Tip please(: :
 TRX: TA4AxvvaFL52MsSdY3Cs1hQwtUQpErxYcR
 ETH: 0xF4EAd4935a44102a8FdE7Fa08053F350AA4904C1
 
+My blog ^^ : <a href="https://hikarikat179.blogspot.com/">https://hikarikat179.blogspot.com/ </a>
+Twitter    : <a href="https://twitter.com/farmer_defi">https://twitter.com/farmer_defi </a>
 
+For more request! please drop a mail to mydefiyield@gmail.com 
       </pre>
    
     </body>

@@ -3,6 +3,7 @@
   "blockchainToken": "TRX",
   "accountExplorer": "https://tronscan.org/#/address/{{ADDRESS}}",
   "pairs": {
+
       "SEED-TRX":{
       "name": "SEED",
       "contractAddress": "TMFvnLMR1r1awHVGZsciwP4e3PVD7eiMWe",
@@ -57,15 +58,6 @@
       "againstTokenAddress": "TRX",
       "decimals": 6
     },
-    "JSI-TRX":{
-      "name": "JFI",
-      "contractAddress": "TEAVNdAKKEzXUSvECuQHCyXUZJ1aGRKa3s",
-      "token": "uJFI",
-      "tokenAddress": "TN7zQd2oCCguSQykZ437tZzLEaGJ7EGyha",
-      "againstToken": "TRX",
-      "againstTokenAddress": "TRX",
-      "decimals": 18
-    },
     "SUN-TRX":{
       "name": "SUN",
       "contractAddress": "TCFkPBue2PJC4DYm3pcf2n8zS4BoS7HX5t",
@@ -83,7 +75,26 @@
       "againstToken": "TRX",
       "againstTokenAddress": "TRX",
       "decimals": 18
+    },
+    "JFI-TRX":{
+      "name": "JFI",
+      "contractAddress": "TEAVNdAKKEzXUSvECuQHCyXUZJ1aGRKa3s",
+      "token": "uJFI",
+      "tokenAddress": "TN7zQd2oCCguSQykZ437tZzLEaGJ7EGyha",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 18
+    },
+    "USDJ-TRX":{
+      "name": "USDJ",
+      "contractAddress": "TAHRToWQxwWiAA8eG96ZXk6AZAFf1fWRhd",
+      "token": "uUSDJ",
+      "tokenAddress": "TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 18
     }
+
   },
   "contracts": {
     "TRX": {
@@ -125,7 +136,12 @@
     "SUN": {
       "address": "TKkeiboTkxXKJpbmVFbv4a8ov5rAfRDMf9",
       "decimals": 18
+    },
+    "USDJ":{
+      "address":"TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT",
+      "decimals":18
     }
+
   },
   "globalPrecision": 1000000,
   "globalPowerPrecision": 6,
