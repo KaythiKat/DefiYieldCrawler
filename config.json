@@ -93,6 +93,24 @@
       "againstToken": "TRX",
       "againstTokenAddress": "TRX",
       "decimals": 18
+    },
+    "DZI-TRX":{
+      "name": "DZI",
+      "contractAddress": "TGSnBBsXX6Dh5cK4tteDzQCVoCaVBzT1qQ",
+      "token": "uDZI",
+      "tokenAddress": "TLi2o9XadMAonBJvzoj1kHBkNe6Nh1SaZ3",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 9
+    },
+    "DICE-TRX":{
+    "name": "DICE",
+    "contractAddress": "TVJ7r82DcYaX3VBZY7Ri4P3v1gChcXTmJj",
+    "token": "uDICE",
+    "tokenAddress": "TKttnV3FSY1iEoAwB4N52WK2DxdV94KpSd",
+    "againstToken": "TRX",
+    "againstTokenAddress": "TRX",
+    "decimals": 6
     }
 
   },
@@ -140,6 +158,14 @@
     "USDJ":{
       "address":"TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT",
       "decimals":18
+    },
+    "DZI": {
+      "address": "TLi2o9XadMAonBJvzoj1kHBkNe6Nh1SaZ3",
+      "decimals": 9
+    },
+    "DICE": {
+      "address": "TKttnV3FSY1iEoAwB4N52WK2DxdV94KpSd",
+      "decimals": 6
     }
 
   },
