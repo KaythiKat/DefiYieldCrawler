@@ -111,7 +111,25 @@
     "againstToken": "TRX",
     "againstTokenAddress": "TRX",
     "decimals": 6
-    }
+    },
+    "PEARL-TRX":{
+    "name": "PEARL",
+    "contractAddress": "TKaJATQVeVYiTB2fQBAhrC23viQuxoeLPb",
+    "token": "uPEARL",
+    "tokenAddress": "TGbu32VEGpS4kDmjrmn5ZZJgUyHQiaweoq",
+    "againstToken": "TRX",
+    "againstTokenAddress": "TRX",
+    "decimals": 18
+  },
+    "TAI-TRX":{
+      "name": "TAI",
+      "contractAddress": "TTPXsKiQWNXLMZha7iDWbeSmm3c81DVG57",
+      "token": "uTAI",
+      "tokenAddress": "TRwS7apsNdRGzMBfhB2hVC4RhqfubUYZ8P",
+      "againstToken": "TRX",
+      "againstTokenAddress": "TRX",
+      "decimals": 18
+  }
 
   },
   "contracts": {
@@ -166,6 +184,14 @@
     "DICE": {
       "address": "TKttnV3FSY1iEoAwB4N52WK2DxdV94KpSd",
       "decimals": 6
+    },
+    "PEARL": {
+      "address": "TGbu32VEGpS4kDmjrmn5ZZJgUyHQiaweoq",
+      "decimals": 18
+    },
+    "TAI": {
+      "address": "TRwS7apsNdRGzMBfhB2hVC4RhqfubUYZ8P",
+      "decimals": 18
     }
 
   },
